@@ -1,0 +1,5 @@
+.box-1 {
+   & > div {
+      border-radius: 15px;
+   }
+}
