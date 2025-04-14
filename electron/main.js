@@ -1,8 +1,6 @@
-import { exec } from "child_process";
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
-import { detectNewProcesses } from "./helpers/detect-new-processes.helper.js";
 import { checkMacScreenRecording } from "./helpers/check-mac-screen-recording.helper.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,33 +40,33 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-   if (process.platform !== "darwin") app.quit();
+   if (process.platform !== "darwin") quitApp();
 });
 
 let activeSchedule = [];
 let checkInterval = null;
 let scheduledTimeouts = [];
-let isCurrentlyRecording = false;
 let warningWindow = null;
+let currentIntervalMs = 10000;
+let processName = "VTEncoderXPCService";
+let cpu = 1;
 
 function startCheckLoop() {
    if (checkInterval) return;
    checkInterval = setInterval(() => {
-      checkMacScreenRecording((result) => {
-         console.log(result);
-         if (!result.found) {
-            showPersistentNotification();
-            win?.webContents.send("recording-status", result);
-            console.log(`send recording-status`);
-            isCurrentlyRecording = false;
-         } else {
-            hidePersistentNotification();
-            if (!isCurrentlyRecording) {
+      checkMacScreenRecording({
+         cpu: cpu,
+         processName: processName,
+         callback: (result) => {
+            console.log(result);
+            if (!result.found) {
+               showPersistentNotification();
                win?.webContents.send("recording-status", result);
-               console.log(`send recording-status`);
-               isCurrentlyRecording = true;
+            } else {
+               hidePersistentNotification();
+               win?.webContents.send("recording-status", result);
             }
-         }
+         },
       });
 
       // detectNewProcesses((newList) => {
@@ -82,7 +80,7 @@ function startCheckLoop() {
       //    if (result.byProcess) console.log("📦 Phát hiện qua tiến trình nghi ngờ");
       //    if (result.byQuickTime) console.log("🍎 Phát hiện qua QuickTime");
       // });
-   }, 2000);
+   }, currentIntervalMs);
    console.log("🔁 Bắt đầu kiểm tra ghi hình");
 }
 
@@ -128,7 +126,6 @@ function restart() {
    stopCheckLoop();
    scheduledTimeouts.forEach(clearTimeout);
    scheduledTimeouts = [];
-   isCurrentlyRecording = false;
    scheduleAllCheckWindows();
 }
 
@@ -163,7 +160,45 @@ function hidePersistentNotification() {
    }
 }
 
+function quitApp() {
+   // 1. Clear interval và timeout
+   if (checkInterval) {
+      clearInterval(checkInterval);
+      checkInterval = null;
+   }
+
+   scheduledTimeouts.forEach(clearTimeout);
+   scheduledTimeouts = [];
+
+   // 2. Đóng warningWindow nếu còn
+   if (warningWindow) {
+      warningWindow.close();
+      warningWindow = null;
+   }
+
+   // 3. Đóng tất cả BrowserWindow nếu có thêm
+   BrowserWindow.getAllWindows().forEach((win) => {
+      if (!win.isDestroyed()) win.destroy();
+   });
+
+   // 4. Thoát ứng dụng hoàn toàn
+   // app.exit(0);
+   app.quit();
+}
+
 ipcMain.handle("update-schedule", async (_, scheduleUpdate) => {
    activeSchedule = scheduleUpdate;
    restart();
+});
+ipcMain.handle("update-setting", async (_, setting) => {
+   if (setting) {
+      currentIntervalMs = Number(setting.checkIntervalMs) > 100 ? Number(setting.checkIntervalMs) : 100;
+      processName = setting.processName;
+      cpu = setting.cpu;
+      restart();
+   }
+});
+ipcMain.handle("quit-app", async () => {
+   console.log("👋 Goodbye!");
+   quitApp();
 });

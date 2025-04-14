@@ -3,9 +3,9 @@ import { IconArrowMoveRightFilled, IconTrashXFilled } from "@tabler/icons-react"
 import { DELETE_SCHEDULE } from "../../store/slices/schedule/schedule.slice";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { ESchedule } from "../../types/enum/schedule.enum";
+import { isNowInSchedule } from "../helpers/function.helper";
 import Paper from "./custom/PaperCustom";
 import Nodata from "./no-data/Nodata";
-import { isNowInSchedule } from "../helpers/function.helper";
 
 export default function ListSchedule() {
    const scheduleList = useAppSelector((state) => state.schedule.scheduleList);
@@ -14,6 +14,8 @@ export default function ListSchedule() {
    const handleDeleteSchedule = (index: number) => {
       dispatch(DELETE_SCHEDULE(index));
    };
+
+
    return (
       <Paper>
          <Stack>
@@ -24,7 +26,7 @@ export default function ListSchedule() {
                   const isActive = isNowInSchedule(item);
                   return (
                      <Group key={index}>
-                        <Box w={10}>{isActive && <Indicator processing color="green" size={10} position="middle-end" />}</Box>
+                        <Box w={10}>{isActive && <Indicator processing={true} color="green" size={10} position="middle-end" />}</Box>
                         <Text w={70}>{ESchedule[item.day]}</Text>
                         <Badge variant="light" color="cyan" size="lg">
                            {item.startHour.toString().padStart(2, "0")}:{item.startMinute.toString().padStart(2, "0")}:

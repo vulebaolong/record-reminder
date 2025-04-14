@@ -1,9 +1,10 @@
 import { combineReducers } from "redux";
 import schedule from "./schedule/schedule.slice";
+import setting from "./setting/setting.slice";
 
 const combinedReducer = combineReducers({
    schedule,
-  
+   setting,
 });
 
 export const rootReducer = (state: any, action: any) => {

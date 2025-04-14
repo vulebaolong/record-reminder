@@ -11,7 +11,7 @@ export default function LogStatus() {
          const timestamp = new Date().toLocaleTimeString();
          const message = data.message
             ? `[${timestamp}] ${data.message}`
-            : `[${timestamp}] ${data.found ? "🎥 Đang ghi" : "🟢 Không ghi"} | PID: ${data.pid || "N/A"}`;
+            : `[${timestamp}] ${data.found ? "🟢 Đang ghi" : "🛑 Không ghi"} | PID: ${data.pid || "N/A"}`;
          setStatus((prev) => [...prev, message]);
       };
 

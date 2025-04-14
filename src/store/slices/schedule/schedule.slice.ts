@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { addSchedule, deleteScheduleByIndex, loadSchedule } from "../../../common/helpers/function.helper";
 import { TSchedule } from "./schedule.type";
-import { loadSchedule, addSchedule, deleteScheduleByIndex } from "../../../common/helpers/function.helper";
 
 type TInitialState = {
    scheduleList: TSchedule[];

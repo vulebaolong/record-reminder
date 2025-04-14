@@ -1,0 +1,35 @@
+@keyframes pulseOnce {
+   0% {
+     opacity: 0.6;
+     transform: translate(-50%, -50%) scale(0);
+   }
+   100% {
+     opacity: 0;
+     transform: translate(-50%, -50%) scale(2.8);
+   }
+ }
+ 
+ .pulse-dot {
+   position: relative;
+   width: 15px;
+   height: 15px;
+   background-color: rgb(2, 230, 2);
+   border-radius: 50%;
+   overflow: visible;
+ }
+ 
+ .pulse-ring {
+   position: absolute;
+   width: 30px;
+   height: 30px;
+   border-radius: 50%;
+   background-color: rgb(2, 230, 2);
+   opacity: 0.6;
+   animation: pulseOnce 0.6s ease-out forwards;
+ 
+   /* 👇 canh giữa */
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+ }
+ 

@@ -1,10 +1,12 @@
 import type { TSchedule } from "@/store/slices/schedule/schedule.type";
+import { TAppSetting } from "../common/helpers/function.helper";
 
 declare global {
    interface Window {
       electron: {
-         checkRecording: () => Promise<any>;
+         quitApp: () => Promise<any>;
          updateSchedule: (scheduleList: TSchedule[]) => Promise<any>;
+         updateSetting: (setting: TAppSetting) => Promise<any>;
          ipcRenderer?: {
             invoke: (channel: string, ...args: any[]) => Promise<any>;
             on?: (channel: string, listener: (...args: any[]) => void) => void;
@@ -12,4 +14,9 @@ declare global {
          };
       };
    }
+   type TAppSetting = {
+      checkIntervalMs: number;
+      processName: string;
+      cpu: number;
+   };
 }

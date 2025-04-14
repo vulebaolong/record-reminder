@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 
-export function checkMacScreenRecording(callback) {
+export function checkMacScreenRecording({callback, processName, cpu}) {
    exec("ps -eo pid=,ppid=,user=,%cpu=,%mem=,etime=,comm=,command=", (err, stdout) => {
       const now = new Date().toISOString();
       if (err) {
@@ -15,7 +15,7 @@ export function checkMacScreenRecording(callback) {
 
       const matches = lines
          .map((line) => line.trim())
-         .filter((line) => line.includes("VTEncoderXPCService"))
+         .filter((line) => line.includes(processName))
          .map((line) => {
             const parts = line.trim().split(/\s+/);
             return {
@@ -29,7 +29,7 @@ export function checkMacScreenRecording(callback) {
                commandFull: parts.slice(7).join(" "),
             };
          })
-         .filter((proc) => proc.cpu > 1); // ✨ chỉ lấy những process có %CPU > 1
+         .filter((proc) => proc.cpu > cpu); // ✨ chỉ lấy những process có %CPU > 1
 
       if (matches.length > 0) {
          return callback({

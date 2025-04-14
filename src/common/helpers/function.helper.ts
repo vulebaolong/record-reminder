@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { TSchedule } from "../../store/slices/schedule/schedule.type";
-import { SCHEDULE_LIST } from "../constant/app.constant";
+import { INIT_CHECK_INTERVAL_MS, INIT_CPU, INIT_PROCESS_NAME, SCHEDULE_LIST, SETTING } from "../constant/app.constant";
 
 export function loadSchedule() {
    const raw = localStorage.getItem(SCHEDULE_LIST);
@@ -47,4 +47,34 @@ export function isNowInSchedule(schedule: TSchedule): boolean {
    const endSec = schedule.endHour * 3600 + schedule.endMinute * 60 + schedule.endSecond;
 
    return nowSec >= startSec && nowSec <= endSec;
+}
+
+export function loadAppSetting(): TAppSetting {
+   const raw = localStorage.getItem(SETTING);
+   if (raw) {
+      try {
+         const parsed = JSON.parse(raw);
+         return {
+            checkIntervalMs: parsed.checkIntervalMs || INIT_CHECK_INTERVAL_MS,
+            processName: parsed.processName || INIT_PROCESS_NAME,
+            cpu: parsed.cpu || INIT_CPU,
+         };
+      } catch (e) {
+         console.warn("❌ Lỗi đọc setting, dùng mặc định.");
+      }
+   }
+   const defaultSetting: TAppSetting = {
+      checkIntervalMs: INIT_CHECK_INTERVAL_MS,
+      processName: INIT_PROCESS_NAME,
+      cpu: INIT_CPU,
+   };
+   localStorage.setItem(SETTING, JSON.stringify(defaultSetting));
+   return defaultSetting;
+}
+
+export function updateAppSetting(newSetting: Partial<TAppSetting>) {
+   const current = loadAppSetting();
+   const updated = { ...current, ...newSetting };
+   localStorage.setItem(SETTING, JSON.stringify(updated));
+   return updated;
 }
