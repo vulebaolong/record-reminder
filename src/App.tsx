@@ -4,6 +4,7 @@ import ListSchedule from "./common/components/ListSchedule";
 import Setting from "./common/components/Setting";
 import Status from "./common/components/Status";
 import Version from "./common/components/Version";
+import FindProcess from "./common/components/FindProcess";
 
 function App() {
    return (
@@ -13,6 +14,7 @@ function App() {
             <AddSchedule />
             <ListSchedule />
             <Setting />
+            <FindProcess />
             <Button
                w={`fit-content`}
                variant="subtle"
@@ -29,7 +31,6 @@ function App() {
 }
 
 export default App;
-
 
 // sudo xattr -r -d com.apple.quarantine /Applications/Record\ Reminder.app
 // /Applications/Record\ Reminder.app/Contents/MacOS/Record\ Reminder

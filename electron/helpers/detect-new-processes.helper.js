@@ -1,9 +1,10 @@
 import { exec } from "child_process";
+import path from "path";
 
 let previousProcesses = new Set();
+let initialized = false;
 
 export function detectNewProcesses(callback) {
-   // Lấy nhiều thông tin hơn từ mỗi tiến trình
    const psCommand = `ps -eo pid=,ppid=,user=,%cpu=,%mem=,etime=,start=,rss=,stat=,comm=,command=`;
 
    exec(psCommand, (err, stdout) => {
@@ -19,16 +20,16 @@ export function detectNewProcesses(callback) {
          const trimmed = line.trim();
          if (!trimmed) continue;
 
-         // split giữ lại dấu cách trong command cuối cùng
          const parts = trimmed.match(/^(\d+)\s+(\d+)\s+(\S+)\s+([\d.]+)\s+([\d.]+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.*)$/);
          if (!parts) continue;
 
-         const [
-            _full, pid, ppid, user, cpu, mem, etime, start, rss, stat, commandShort, commandFull
-         ] = parts;
+         const [_full, pid, ppid, user, cpu, mem, etime, start, rss, stat, _comm, commandFull] = parts;
 
          const key = `${pid}-${commandFull}`;
-         if (!previousProcesses.has(key)) {
+         const name = path.basename(commandFull);
+         if (name === "ps" || commandFull.includes("ps -eo")) continue;
+
+         if (initialized && !previousProcesses.has(key)) {
             newProcesses.push({
                pid,
                ppid,
@@ -39,12 +40,17 @@ export function detectNewProcesses(callback) {
                started: start,
                memory: `${rss} KB`,
                status: stat,
-               name: commandShort,
+               name, // dùng tên chính xác
                command: commandFull,
             });
          }
 
          previousProcesses.add(key);
+      }
+
+      if (!initialized) {
+         initialized = true;
+         return callback([]);
       }
 
       callback(newProcesses);

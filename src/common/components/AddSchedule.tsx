@@ -9,16 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../store/store";
 import Paper from "./custom/PaperCustom";
 import { ESchedule } from "../../types/enum/schedule.enum";
 
-// const dayMap = [
-//    { value: "0", label: "Chủ nhật" },
-//    { value: "1", label: "Thứ hai" },
-//    { value: "2", label: "Thứ ba" },
-//    { value: "3", label: "Thứ tư" },
-//    { value: "4", label: "Thứ năm" },
-//    { value: "5", label: "Thứ sáu" },
-//    { value: "6", label: "Thứ bảy" },
-// ];
-
 const dayMap = Object.entries(ESchedule)
    .filter(([_, value]) => typeof value === "number")
    .map((item) => ({ value: item[1].toString(), label: item[0] }));

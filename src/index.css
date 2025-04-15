@@ -11,8 +11,6 @@
  
  .pulse-dot {
    position: relative;
-   width: 15px;
-   height: 15px;
    background-color: rgb(2, 230, 2);
    border-radius: 50%;
    overflow: visible;
@@ -20,8 +18,6 @@
  
  .pulse-ring {
    position: absolute;
-   width: 30px;
-   height: 30px;
    border-radius: 50%;
    background-color: rgb(2, 230, 2);
    opacity: 0.6;

@@ -9,6 +9,7 @@ declare global {
          quitApp: () => Promise<any>;
          updateSchedule: (scheduleList: TSchedule[]) => Promise<any>;
          updateSetting: (setting: TAppSetting) => Promise<any>;
+         isFindProcess: (isFindProcess: boolean) => Promise<any>;
          restartApp: () => Promise<any>;
          ipcRenderer?: {
             invoke: (channel: string, ...args: any[]) => Promise<any>;

@@ -3,6 +3,7 @@ import updater from "electron-updater";
 import path from "path";
 import { fileURLToPath } from "url";
 import { checkMacScreenRecording } from "./helpers/check-mac-screen-recording.helper.js";
+import { detectNewProcesses } from "./helpers/detect-new-processes.helper.js";
 const { autoUpdater } = updater;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -60,9 +61,11 @@ app.on("window-all-closed", () => {
 
 let activeSchedule = [];
 let checkInterval = null;
+let findProcessInterval = null;
 let scheduledTimeouts = [];
 let warningWindow = null;
 let currentIntervalMs = 10000;
+let findProcessIntervalMs = 1000;
 let processName = "VTEncoderXPCService";
 let cpu = 1;
 
@@ -96,13 +99,36 @@ function startCheckLoop() {
       //    if (result.byQuickTime) console.log("🍎 Phát hiện qua QuickTime");
       // });
    }, currentIntervalMs);
+   win?.webContents.send("is-check-loop", true);
    console.log("🔁 Bắt đầu kiểm tra ghi hình");
 }
 
 function stopCheckLoop() {
    if (checkInterval) clearInterval(checkInterval);
    checkInterval = null;
+   win?.webContents.send("is-check-loop", false);
    console.log("⏹️ Dừng kiểm tra ghi hình");
+}
+
+function startFindProcessLoop() {
+   if (findProcessInterval) return;
+   findProcessInterval = setInterval(() => {
+      win?.webContents.send("interval-find-process");
+
+      detectNewProcesses((newList) => {
+         newList.forEach((proc) => {
+            console.log("🆕 Process mới:", proc);
+            win?.webContents.send("new-process", proc);
+         });
+      });
+   }, findProcessIntervalMs);
+   console.log("🔁 Bắt đầu tìm process");
+}
+
+function stopFindProcessLoop() {
+   if (findProcessInterval) clearInterval(findProcessInterval);
+   findProcessInterval = null;
+   console.log("⏹️ Dừng tìm process");
 }
 
 function scheduleAllCheckWindows() {
@@ -139,6 +165,7 @@ function scheduleAllCheckWindows() {
 function restart() {
    hidePersistentNotification();
    stopCheckLoop();
+   stopFindProcessLoop();
    scheduledTimeouts.forEach(clearTimeout);
    scheduledTimeouts = [];
    scheduleAllCheckWindows();
@@ -180,6 +207,10 @@ function quitApp() {
    if (checkInterval) {
       clearInterval(checkInterval);
       checkInterval = null;
+   }
+   if (findProcessInterval) {
+      clearInterval(findProcessInterval);
+      findProcessInterval = null;
    }
 
    scheduledTimeouts.forEach(clearTimeout);
@@ -233,4 +264,11 @@ ipcMain.handle("get-app-version", async () => {
    }
 
    return { current, latest };
+});
+ipcMain.handle("is-find-process", async (_, isFindProcess) => {
+   if (isFindProcess) {
+      startFindProcessLoop();
+   } else {
+      stopFindProcessLoop();
+   }
 });
