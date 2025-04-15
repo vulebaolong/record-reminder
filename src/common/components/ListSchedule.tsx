@@ -15,7 +15,6 @@ export default function ListSchedule() {
       dispatch(DELETE_SCHEDULE(index));
    };
 
-
    return (
       <Paper>
          <Stack>
@@ -25,15 +24,15 @@ export default function ListSchedule() {
                {scheduleList.map((item, index) => {
                   const isActive = isNowInSchedule(item);
                   return (
-                     <Group key={index}>
+                     <Group key={index} py={2}>
                         <Box w={10}>{isActive && <Indicator processing={true} color="green" size={10} position="middle-end" />}</Box>
                         <Text w={70}>{ESchedule[item.day]}</Text>
-                        <Badge variant="light" color="cyan" size="lg">
+                        <Badge w={90} variant="light" color="cyan" size="lg">
                            {item.startHour.toString().padStart(2, "0")}:{item.startMinute.toString().padStart(2, "0")}:
                            {item.startSecond.toString().padStart(2, "0")}
                         </Badge>
                         <IconArrowMoveRightFilled />
-                        <Badge variant="light" color="green" size="lg">
+                        <Badge w={90} variant="light" color="green" size="lg">
                            {item.endHour.toString().padStart(2, "0")}:{item.endMinute.toString().padStart(2, "0")}:
                            {item.endSecond.toString().padStart(2, "0")}
                         </Badge>
