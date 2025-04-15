@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import updater from "electron-updater";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -31,15 +31,18 @@ function createWindow() {
       win = null;
    });
 
-   // autoUpdater.checkForUpdatesAndNotify();
+   win.webContents.setWindowOpenHandler(({ url }) => {
+      // Mở các link ngoài bằng trình duyệt mặc định
+      shell.openExternal(url);
+      return { action: "deny" };
+   });
 
-   // autoUpdater.on("update-available", () => {
-   //    win.webContents.send("update-available");
-   // });
-
-   // autoUpdater.on("update-downloaded", () => {
-   //    win.webContents.send("update-downloaded");
-   // });
+   win.webContents.on("will-navigate", (event, url) => {
+      if (url !== win.webContents.getURL()) {
+         event.preventDefault();
+         shell.openExternal(url);
+      }
+   });
 }
 
 app.whenReady().then(() => {
