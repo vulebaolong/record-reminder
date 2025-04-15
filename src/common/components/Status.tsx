@@ -32,21 +32,27 @@ export default function Status() {
    }, []);
 
    return (
-      <Paper shadow="md" p="md" radius="md" withBorder>
-         <Stack>
-            <Group>
-               <Text size="sm" c={`dimmed`}>Tần suất kiểm tra</Text>
-               <div className="pulse-dot">
-                  {ripples.map((id) => (
-                     <div key={id} className="pulse-ring" />
-                  ))}
-               </div>
-            </Group>
-            <Group>
-               <Text size="sm" c={`dimmed`}>Trạng thái: </Text>
-               <Text> {isRecord ? "🟢 Đang ghi" : "🛑 Không ghi"}</Text>
-            </Group>
-         </Stack>
-      </Paper>
+      <>
+         <Paper shadow="md" p="md" radius="md" withBorder>
+            <Stack>
+               <Group>
+                  <Text size="sm" c={`dimmed`}>
+                     Tần suất kiểm tra
+                  </Text>
+                  <div className="pulse-dot">
+                     {ripples.map((id) => (
+                        <div key={id} className="pulse-ring" />
+                     ))}
+                  </div>
+               </Group>
+               <Group>
+                  <Text size="sm" c={`dimmed`}>
+                     Trạng thái:{" "}
+                  </Text>
+                  <Text> {isRecord ? "🟢 Đang ghi" : "🛑 Không ghi"}</Text>
+               </Group>
+            </Stack>
+         </Paper>
+      </>
    );
 }

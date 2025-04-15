@@ -8,4 +8,6 @@ contextBridge.exposeInMainWorld("electron", {
    quitApp: () => ipcRenderer.invoke("quit-app"),
    updateSchedule: (data) => ipcRenderer.invoke("update-schedule", data),
    updateSetting: (data) => ipcRenderer.invoke("update-setting", data),
+   restartApp: () => ipcRenderer.invoke("restart-app"),
+   getAppVersion: () => ipcRenderer.invoke("get-app-version"),
 });

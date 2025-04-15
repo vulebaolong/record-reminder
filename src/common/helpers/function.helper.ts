@@ -78,3 +78,9 @@ export function updateAppSetting(newSetting: Partial<TAppSetting>) {
    localStorage.setItem(SETTING, JSON.stringify(updated));
    return updated;
 }
+
+export const wait = (miliseconds: number) => {
+   return new Promise(function (resolve) {
+      setTimeout(resolve, miliseconds);
+   });
+};

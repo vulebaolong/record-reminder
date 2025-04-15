@@ -1,7 +1,9 @@
 import { app, BrowserWindow, ipcMain } from "electron";
+import updater from "electron-updater";
 import path from "path";
 import { fileURLToPath } from "url";
 import { checkMacScreenRecording } from "./helpers/check-mac-screen-recording.helper.js";
+const { autoUpdater } = updater;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,6 +30,16 @@ function createWindow() {
    win.on("closed", () => {
       win = null;
    });
+
+   // autoUpdater.checkForUpdatesAndNotify();
+
+   // autoUpdater.on("update-available", () => {
+   //    win.webContents.send("update-available");
+   // });
+
+   // autoUpdater.on("update-downloaded", () => {
+   //    win.webContents.send("update-downloaded");
+   // });
 }
 
 app.whenReady().then(() => {
@@ -201,4 +213,21 @@ ipcMain.handle("update-setting", async (_, setting) => {
 ipcMain.handle("quit-app", async () => {
    console.log("👋 Goodbye!");
    quitApp();
+});
+ipcMain.handle("restart-app", () => {
+   console.log("🔄 Restarting...");
+   autoUpdater.quitAndInstall();
+});
+ipcMain.handle("get-app-version", async () => {
+   const current = app.getVersion();
+   let latest = null;
+
+   try {
+      const updateCheck = await autoUpdater.checkForUpdates();
+      latest = updateCheck?.updateInfo?.version || null;
+   } catch (error) {
+      console.warn("⚠️ Không thể kiểm tra bản cập nhật:", error);
+   }
+
+   return { current, latest };
 });
