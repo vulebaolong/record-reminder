@@ -26,7 +26,7 @@ export default function Version() {
             <Text ta={`center`} fz={`xs`} c={"dimmed"}>
                v{getAppVersion.data?.current || `-----`}
             </Text>
-            {getAppVersion.data?.latest && (
+            {getAppVersion.data?.latest && getAppVersion.data.current !== getAppVersion.data.latest && (
                <Text ta={`center`} fz={`xs`} c={"dimmed"}>
                   v{getAppVersion.data.latest} - Latest -{" "}
                   <Anchor
